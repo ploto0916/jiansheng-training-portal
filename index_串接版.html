@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>劍聲幼教｜新人入職引導系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* =====================================================
+   DESIGN TOKENS
+   ===================================================== */
+:root {
+  --coral:       #FF6B5B;
+  --coral-lt:    #FFF0EE;
+  --coral-dk:    #D94F3F;
+  --sky:         #4DC4D5;
+  --sky-lt:      #E6F7FA;
+  --sky-dk:      #2FA8BA;
+  --cream:       #FBF8F3;
+  --white:       #FFFFFF;
+  --txt:         #2A2A2A;
+  --txt-mid:     #606060;
+  --txt-lt:      #9A9A9A;
+  --yellow:      #FFD166;
+  --q-red:       #EF476F;
+  --q-blue:      #118AB2;
+  --q-yellow:    #FFB703;
+  --q-green:     #06D6A0;
+  --shadow-sm:   0 2px 10px rgba(0,0,0,.06);
+  --shadow:      0 4px 24px rgba(0,0,0,.09);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,.13);
+  --r:           16px;
+  --r-lg:        24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans TC', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--txt);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+#main-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 28px;
+  background: rgba(251,248,243,.93);
+  backdrop-filter: blur(12px);
+  border-bottom: 1.5px solid rgba(255,107,91,.12);
+  transition: opacity .3s, transform .3s;
+}
+#main-header.hidden { opacity: 0; pointer-events: none; transform: translateY(-100%); }
+
+.header-logo {
+  font-weight: 900; font-size: .95rem;
+  color: var(--coral); letter-spacing: .06em;
+  display: flex; align-items: center; gap: 6px;
+}
+
+#progress-dots { display: flex; gap: 6px; align-items: center; }
+
+.pdot-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pdot-label { font-size: .55rem; color: var(--txt-lt); white-space: nowrap; }
+
+.pdot {
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid var(--coral);
+  background: transparent;
+  transition: all .3s;
+  position: relative; cursor: default;
+}
+.pdot.done { background: var(--coral); }
+.pdot.done::after {
+  content: '✓';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 7px; color: #fff; font-weight: 700;
+}
+.pdot.current {
+  background: var(--coral);
+  transform: scale(1.35);
+  box-shadow: 0 0 0 3px rgba(255,107,91,.3);
+}
+
+#score-display {
+  font-weight: 700; font-size: .9rem;
+  color: var(--coral-dk);
+  background: var(--coral-lt);
+  padding: 5px 14px; border-radius: 20px;
+  transition: all .3s;
+}
+.score-bump { animation: scorePop .45s ease; }
+@keyframes scorePop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); color: var(--coral-dk); }
+  100% { transform: scale(1); }
+}
+
+/* =====================================================
+   MAIN LAYOUT
+   ===================================================== */
+#app-main {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+}
+#app-main.with-header { padding-top: 62px; }
+
+.screen-inner {
+  width: 100%; max-width: 860px;
+  padding: 36px 24px 72px;
+  animation: fadeUp .45s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px; border-radius: 50px;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  cursor: pointer; border: none; transition: all .2s;
+  text-decoration: none; line-height: 1;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--coral); color: #fff;
+  box-shadow: 0 4px 16px rgba(255,107,91,.42);
+}
+.btn-primary:hover { background: var(--coral-dk); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--sky); color: #fff;
+  box-shadow: 0 4px 16px rgba(77,196,213,.38);
+}
+.btn-secondary:hover { background: var(--sky-dk); transform: translateY(-1px); }
+.btn:disabled { opacity: .38; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* =====================================================
+   CARDS
+   ===================================================== */
+.card {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+/* =====================================================
+   FORM
+   ===================================================== */
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block; font-weight: 700; font-size: .88rem;
+  color: var(--txt-mid); margin-bottom: 7px;
+}
+.form-input, .form-select {
+  width: 100%; padding: 12px 16px;
+  border: 2px solid #EAE5DF; border-radius: 12px;
+  font-family: inherit; font-size: 1rem; color: var(--txt);
+  background: #fff; transition: border-color .2s; outline: none;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--coral); }
+
+/* =====================================================
+   MASCOT SVG ART
+   ===================================================== */
+.mascot-svg { display: block; }
+
+/* Floating animation */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes floatDelay {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.float-anim  { animation: float 3s ease-in-out infinite; }
+.float-anim2 { animation: float 3s ease-in-out infinite; animation-delay: .6s; }
+
+/* Mascot slide-in from sides */
+@keyframes slideFromLeft {
+  from { opacity: 0; transform: translateX(-60px) scale(.8); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(60px) scale(.8); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.slide-left  { animation: slideFromLeft  .55s cubic-bezier(.34,1.56,.64,1); }
+.slide-right { animation: slideFromRight .55s cubic-bezier(.34,1.56,.64,1); }
+
+/* =====================================================
+   SPEECH BUBBLE
+   ===================================================== */
+.mascot-row {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 28px;
+}
+.mascot-row.reverse { flex-direction: row-reverse; }
+
+.mascot-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+.mascot-name-tag {
+  font-size: .7rem; font-weight: 700; color: var(--txt-mid);
+  background: var(--white); padding: 2px 10px; border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.speech-bubble {
+  background: var(--white); border-radius: var(--r); padding: 16px 20px;
+  box-shadow: var(--shadow-sm); font-size: 1.05rem; line-height: 1.75;
+  flex: 1; position: relative;
+}
+.mascot-row:not(.reverse) .speech-bubble::before {
+  content: ''; position: absolute;
+  left: -9px; top: 22px;
+  border: 9px solid transparent; border-right-color: var(--white); border-left: 0;
+  filter: drop-shadow(-2px 0 2px rgba(0,0,0,.04));
+}
+.mascot-row.reverse .speech-bubble::after {
+  content: ''; position: absolute;
+  right: -9px; top: 22px;
+  border: 9px solid transparent; border-left-color: var(--white); border-right: 0;
+}
+
+/* =====================================================
+   STATION HEADER
+   ===================================================== */
+.station-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, var(--coral), var(--coral-dk));
+  color: #fff; padding: 5px 16px; border-radius: 20px;
+  font-weight: 700; font-size: .88rem; margin-bottom: 10px;
+}
+.station-title {
+  font-size: 1.75rem; font-weight: 900; line-height: 1.3;
+  margin-bottom: 28px;
+}
+
+/* =====================================================
+   VIDEO
+   ===================================================== */
+.video-wrap {
+  background: #111; border-radius: var(--r); overflow: hidden;
+  aspect-ratio: 16/9; margin: 20px 0;
+  box-shadow: var(--shadow-lg);
+}
+.video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+.video-lock-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--white); border-radius: 12px;
+  padding: 14px 20px; box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+.video-lock-bar .lock-icon { font-size: 1.3rem; flex-shrink: 0; }
+.video-lock-bar .lock-text { flex: 1; font-size: .9rem; color: var(--txt-mid); }
+.lock-text strong { color: var(--coral); }
+
+.progress-bar-wrap {
+  height: 8px; background: #EEE; border-radius: 4px;
+  flex: 1; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--coral);
+  border-radius: 4px; transition: width 1s linear; width: 0%;
+}
+
+/* =====================================================
+   ORG CHART
+   ===================================================== */
+.org-wrap { overflow-x: auto; padding: 10px 0 20px; }
+.org-tree { display: flex; flex-direction: column; align-items: center; }
+
+.org-node { display: flex; flex-direction: column; align-items: center; }
+.org-vline { width: 2px; height: 28px; background: #DDD; }
+.org-level { display: flex; gap: 20px; position: relative; }
+.org-level::before {
+  content: ''; position: absolute;
+  top: 0; height: 2px; background: #DDD;
+  left: calc(50% - var(--span-half, 50%) ); right: 0;
+}
+
+.org-branch { display: flex; flex-direction: column; align-items: center; }
+.org-branch-vline { width: 2px; height: 24px; background: #DDD; }
+
+.org-card {
+  background: var(--white);
+  border: 2px solid var(--coral-lt);
+  border-radius: 14px;
+  padding: 12px 18px;
+  text-align: center;
+  min-width: 115px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s;
+}
+.org-card:hover { transform: translateY(-2px); }
+.org-card.root { border-color: var(--coral); background: var(--coral-lt); }
+.org-card.dir  { border-color: var(--sky); background: var(--sky-lt); }
+
+.org-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1.1rem; color: #fff;
+  margin: 0 auto 8px;
+}
+.org-photo-wrap {
+  width: 52px; height: 52px; border-radius: 50%;
+  overflow: hidden; margin: 0 auto 8px;
+  border: 2px solid rgba(255,255,255,.6);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.org-photo {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.org-role  { font-size: .7rem; color: var(--txt-lt); margin-bottom: 2px; }
+.org-name  { font-weight: 700; font-size: .88rem; }
+
+/* =====================================================
+   TIMELINE
+   ===================================================== */
+.timeline { position: relative; padding-left: 82px; }
+.timeline::before {
+  content: ''; position: absolute;
+  left: 44px; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(to bottom, var(--coral-lt), var(--sky-lt));
+  border-radius: 2px;
+}
+.tl-item {
+  position: relative; padding: 10px 0 10px 22px;
+  display: flex; align-items: flex-start;
+}
+.tl-dot {
+  position: absolute; left: -19px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--coral); border: 3px solid var(--white);
+  box-shadow: var(--shadow-sm);
+}
+.tl-time {
+  position: absolute; right: calc(100% + 28px); top: 50%;
+  transform: translateY(-50%);
+  font-weight: 700; font-size: .76rem; color: var(--coral-dk);
+  white-space: nowrap; text-align: right; width: 44px;
+}
+.tl-content {
+  background: var(--white); border-radius: 12px;
+  padding: 10px 16px; box-shadow: var(--shadow-sm); flex: 1;
+}
+.tl-content h4 { font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
+.tl-content p  { font-size: .82rem; color: var(--txt-lt); }
+
+/* =====================================================
+   RULES
+   ===================================================== */
+.rules-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.rules-card {
+  background: var(--white); border-radius: var(--r);
+  padding: 20px; box-shadow: var(--shadow-sm);
+}
+.rules-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.rules-icon-wrap {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+}
+.rules-card-title { font-weight: 700; font-size: .95rem; }
+.rules-list { list-style: none; }
+.rules-list li {
+  font-size: .84rem; color: var(--txt-mid);
+  padding: 5px 0 5px 16px; position: relative;
+  border-bottom: 1px solid #F3EFE9;
+}
+.rules-list li:last-child { border-bottom: none; }
+.rules-list li::before {
+  content: '•'; position: absolute; left: 0;
+  color: var(--coral); font-weight: 700;
+}
+
+/* =====================================================
+   STAFF ACCORDION
+   ===================================================== */
+.staff-list { display: flex; flex-direction: column; gap: 12px; }
+.staff-card {
+  background: var(--white); border-radius: var(--r);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.staff-head {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px; cursor: pointer;
+  transition: background .15s;
+}
+.staff-head:hover { background: #FAFAF8; }
+.staff-av {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1.15rem; color: #fff; flex-shrink: 0;
+}
+.staff-info h4 { font-weight: 700; font-size: 1rem; }
+.staff-info p  { font-size: .84rem; color: var(--txt-lt); }
+.staff-badge {
+  display: inline-block; background: var(--sky-lt); color: var(--sky-dk);
+  font-size: .72rem; font-weight: 700; padding: 2px 9px; border-radius: 10px;
+  margin-left: 7px;
+}
+.staff-chevron {
+  margin-left: auto; color: var(--txt-lt);
+  transition: transform .3s; font-size: 1.1rem;
+}
+.staff-card.open .staff-chevron { transform: rotate(180deg); }
+.staff-video-panel { display: none; padding: 0 20px 20px; }
+.staff-card.open .staff-video-panel { display: block; animation: fadeUp .3s ease; }
+.staff-watched-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #E8FAF3; color: #16845A;
+  font-size: .75rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 10px; margin-left: 8px;
+}
+
+/* =====================================================
+   MONTESSORI CARDS
+   ===================================================== */
+.monte-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 14px;
+  margin-top: 20px;
+}
+.monte-card {
+  background: var(--white); border-radius: var(--r);
+  padding: 18px 14px; text-align: center;
+  box-shadow: var(--shadow-sm); transition: transform .2s;
+  animation: fadeUp .4s ease backwards;
+}
+.monte-card:hover { transform: translateY(-3px); }
+.monte-icon { font-size: 2rem; margin-bottom: 8px; }
+.monte-name { font-weight: 700; font-size: .88rem; margin-bottom: 4px; }
+.monte-desc { font-size: .78rem; color: var(--txt-lt); line-height: 1.45; }
+
+/* =====================================================
+   BIHENG FEATURE CARDS
+   ===================================================== */
+.biheng-cards {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 20px;
+}
+.biheng-card {
+  background: var(--white); border-radius: var(--r);
+  padding: 20px 16px; text-align: center; box-shadow: var(--shadow-sm);
+}
+.biheng-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.biheng-card h4 { font-weight: 700; margin-bottom: 6px; font-size: .95rem; }
+.biheng-card p  { font-size: .82rem; color: var(--txt-lt); line-height: 1.5; }
+
+/* =====================================================
+   QUIZ
+   ===================================================== */
+.quiz-zone { max-width: 720px; margin: 0 auto; }
+
+.quiz-top {
+  text-align: center; margin-bottom: 28px;
+}
+.quiz-badge {
+  display: inline-block;
+  background: var(--yellow); color: #7A5800;
+  font-weight: 700; font-size: .85rem;
+  padding: 4px 16px; border-radius: 20px; margin-bottom: 10px;
+}
+.quiz-qnum {
+  font-size: .88rem; color: var(--txt-lt); margin-bottom: 10px;
+}
+.quiz-q {
+  font-size: 1.55rem; font-weight: 900; line-height: 1.45;
+}
+
+.quiz-opts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin: 30px 0;
+}
+.qopt {
+  border: none; border-radius: var(--r); padding: 20px 16px;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  color: #fff; cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  text-align: left; transition: all .2s;
+  min-height: 72px;
+}
+.qopt:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-2px); }
+.qopt:active:not(:disabled) { transform: translateY(0); }
+.qopt:disabled { cursor: default; }
+.qopt.c0 { background: var(--q-red);    box-shadow: 0 4px 16px rgba(239,71,111,.38); }
+.qopt.c1 { background: var(--q-blue);   box-shadow: 0 4px 16px rgba(17,138,178,.38); }
+.qopt.c2 { background: var(--q-yellow); color: #5A3800; box-shadow: 0 4px 16px rgba(255,183,3,.38); }
+.qopt.c3 { background: var(--q-green);  box-shadow: 0 4px 16px rgba(6,214,160,.38); }
+
+.qopt.state-correct {
+  background: #06D6A0 !important; color: #fff !important;
+  box-shadow: 0 4px 20px rgba(6,214,160,.55) !important;
+  transform: scale(1.02);
+}
+.qopt.state-wrong-sel {
+  background: #EF476F !important; color: #fff !important;
+  box-shadow: 0 4px 20px rgba(239,71,111,.45) !important;
+}
+.qopt.state-dim {
+  background: #E8E8E8 !important; color: #AAA !important;
+  box-shadow: none !important; transform: scale(.97);
+}
+
+.opt-icon {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,.28);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+.quiz-result-box {
+  background: var(--white); border-radius: var(--r);
+  padding: 18px 22px; box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--sky);
+  font-size: .96rem; line-height: 1.75;
+  animation: fadeUp .35s ease;
+  margin-bottom: 16px;
+}
+.quiz-actions {
+  display: flex; justify-content: flex-end;
+}
+
+/* =====================================================
+   MASCOT POPUP
+   ===================================================== */
+#mascot-popup {
+  position: fixed; bottom: 28px; right: 28px; z-index: 300;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  opacity: 0; transform: translateY(20px) scale(.8);
+  transition: all .4s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+#mascot-popup.show {
+  opacity: 1; transform: translateY(0) scale(1);
+}
+.popup-bubble {
+  background: var(--white); border-radius: 16px;
+  padding: 11px 16px; box-shadow: var(--shadow-lg);
+  font-weight: 700; font-size: .92rem; max-width: 190px;
+  text-align: center; line-height: 1.4;
+}
+#popup-mascot-svg { width: 72px; height: 86px; }
+
+@keyframes popJump {
+  0%,100% { transform: translateY(0); }
+  35%      { transform: translateY(-16px); }
+  65%      { transform: translateY(-7px); }
+}
+#mascot-popup.show #popup-mascot-svg {
+  animation: popJump .65s ease;
+}
+
+/* =====================================================
+   WELCOME SCREEN
+   ===================================================== */
+.welcome-center {
+  min-height: calc(100vh - 62px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px; max-width: 700px; margin: 0 auto; width: 100%;
+}
+.welcome-mascots-row {
+  display: flex; gap: 48px; justify-content: center;
+  margin-bottom: 36px;
+}
+.welcome-mascot-col {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.welcome-mascot-col svg { width: 116px; height: 140px; }
+.welcome-mascot-label {
+  font-weight: 700; font-size: .88rem; color: var(--txt-mid);
+}
+.welcome-bubble {
+  background: var(--white); border-radius: var(--r-lg);
+  padding: 26px 32px; box-shadow: var(--shadow);
+  font-size: 1.05rem; line-height: 1.85; text-align: center;
+  min-height: 80px; width: 100%;
+}
+#tw-cursor {
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--coral); margin-left: 1px;
+  animation: blinkC .7s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blinkC { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* =====================================================
+   SCREEN 0
+   ===================================================== */
+.s0-wrap {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.s0-inner { width: 100%; max-width: 480px; }
+.s0-logo {
+  text-align: center; font-size: 2.2rem; font-weight: 900;
+  color: var(--coral); margin-bottom: 6px;
+}
+.s0-sub {
+  text-align: center; color: var(--txt-mid); font-size: 1rem;
+  margin-bottom: 28px;
+}
+.s0-mascots {
+  display: flex; justify-content: center; gap: 20px;
+  margin-bottom: 28px;
+}
+.s0-mascots svg { width: 76px; height: 92px; }
+
+/* =====================================================
+   COMPLETION SCREEN
+   ===================================================== */
+.completion-center {
+  text-align: center; max-width: 700px; margin: 0 auto;
+  padding: 36px 24px 80px; width: 100%;
+}
+.completion-mascots {
+  display: flex; justify-content: center; gap: 36px; margin-bottom: 32px;
+}
+.completion-mascots svg { width: 100px; height: 120px; }
+.final-score {
+  font-size: 4.5rem; font-weight: 900; color: var(--coral);
+  line-height: 1; margin-bottom: 6px;
+}
+.final-score-sub {
+  font-size: 1rem; color: var(--txt-lt); margin-bottom: 32px;
+}
+.final-msg {
+  background: var(--white); border-radius: var(--r-lg);
+  padding: 26px 30px; box-shadow: var(--shadow);
+  font-size: 1.05rem; line-height: 1.85; margin-bottom: 24px;
+  min-height: 60px;
+}
+.final-meta {
+  color: var(--txt-lt); font-size: .88rem; margin-bottom: 28px;
+}
+.print-btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* =====================================================
+   CONFETTI CANVAS
+   ===================================================== */
+#confetti-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 200;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 600px) {
+  .quiz-opts     { grid-template-columns: 1fr; }
+  .rules-grid    { grid-template-columns: 1fr; }
+  .biheng-cards  { grid-template-columns: 1fr; }
+  .monte-grid    { grid-template-columns: 1fr 1fr; }
+  .station-title { font-size: 1.4rem; }
+  .quiz-q        { font-size: 1.25rem; }
+  .final-score   { font-size: 3rem; }
+}
+
+/* =====================================================
+   MISC
+   ===================================================== */
+.tc  { text-align: center; }
+.mt8  { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+.mt32 { margin-top: 32px; }
+.flex-end { display: flex; justify-content: flex-end; }
+.flex-center { display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas" style="display:none"></canvas>
+
+<!-- Fixed Header -->
+<header id="main-header" class="hidden">
+  <div class="header-logo">🌟 劍聲幼教</div>
+  <div id="progress-dots"></div>
+  <div id="score-display">⭐ <span id="score-val">0</span> 分</div>
+</header>
+
+<!-- App Main -->
+<main id="app-main"></main>
+
+<!-- Mascot Popup -->
+<div id="mascot-popup">
+  <div class="popup-bubble" id="popup-text">答對了！好厲害！</div>
+  <svg id="popup-mascot-svg" viewBox="0 0 100 120"></svg>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — 所有可替換內容統一在此修改
+   ============================================================ */
+const CONFIG = {
+
+  /* ── 影片 ID ── */
+  videos: {
+    environment:  'cv32_BekiW0',              // 認識環境影片
+    history:      'vIEuXuKXhIQ',              // 園所歷史影片
+    schedule:     'OHbV4Hh7CDY',              // 一日流程影片
+    montessori:   'YOUTUBE_MONTESSORI_VIDEO_ID',
+    biheng:       'YOUTUBE_BIHENG_VIDEO_ID',
+    staff: [
+      'YOUTUBE_STAFF_001',
+      'YOUTUBE_STAFF_002',
+      'YOUTUBE_STAFF_003'
+    ]
+  },
+
+  /* ── 機構資訊 ── */
+  institution: {
+    founded:        '民國80年',
+    familiesServed: '5,000'
+  },
+
+  /* ── 組織架構 ── */
+  org: {
+    title: '執行長', name: '余舜鈴', colorClass: 'root',
+    avatarBg: '#E85544', photo: '截圖 2026-06-11 13.10.07.png',
+    children: [
+      {
+        title: '副園長', name: '徐小竹', colorClass: 'dir',
+        avatarBg: '#4DC4D5', photo: '副園長徐小竹.png',
+        children: [
+          { title: '托嬰0~1歲組長', name: '王美麗', avatarBg: '#9B8EC4', colorClass: '', photo: '托嬰0~1歲組長王美麗.png', children: [] }
+        ]
+      },
+      {
+        title: '教學主任', name: '楊繡惠', colorClass: 'dir',
+        avatarBg: '#4DC4D5', photo: '幼兒園教學主任楊繡惠.png',
+        children: [
+          { title: '托嬰1~2歲組長', name: '程小紅', avatarBg: '#F4A261', colorClass: '', photo: '托嬰1~2歲組長程小紅.png', children: [] },
+          { title: '幼幼班組長',    name: '張小利', avatarBg: '#F4A261', colorClass: '', photo: '幼兒園幼幼班組長張小利.png', children: [] }
+        ]
+      }
+    ]
+  },
+
+  /* ── 同事資料 ── */
+  staff: [
+    { name: '王美玲', role: '幼兒園教師', years: 5,  videoId: 'YOUTUBE_STAFF_001', avatarBg: '#E85544' },
+    { name: '陳志偉', role: '托嬰保育員', years: 3,  videoId: 'YOUTUBE_STAFF_002', avatarBg: '#4DC4D5' },
+    { name: '林怡君', role: '幼兒園教師', years: 8,  videoId: 'YOUTUBE_STAFF_003', avatarBg: '#9B8EC4' }
+  ],
+
+  /* ── 一日作息 ── */
+  schedule: [
+    { time: '07:30', title: '開園準備',     desc: '教師到班，整理環境，準備教具' },
+    { time: '08:00', title: '幼兒入園',     desc: '迎接幼兒，晨間自由探索' },
+    { time: '09:00', title: '團討時間',     desc: '全班圍圈，分享與引導' },
+    { time: '09:30', title: '工作時間',     desc: '蒙特梭利教具自主操作' },
+    { time: '11:00', title: '戶外活動',     desc: '操場或走廊自由活動' },
+    { time: '11:30', title: '午餐準備',     desc: '洗手、擺碗筷、感恩禱告' },
+    { time: '12:00', title: '午餐時間',     desc: '用餐與生活自理練習' },
+    { time: '12:30', title: '午休準備',     desc: '刷牙、鋪床、安靜入睡' },
+    { time: '14:30', title: '起床整理',     desc: '摺被、整理儀容' },
+    { time: '15:00', title: '點心時間',     desc: '點心與小組活動' },
+    { time: '15:30', title: '下午工作時間', desc: '教具操作或美勞創作' },
+    { time: '16:30', title: '放學準備',     desc: '整理書包、等待家長' },
+    { time: '17:30', title: '閉園',         desc: '最後幼兒離園，環境整理' }
+  ],
+
+  /* ── 園所規章 ── */
+  rules: [
+    {
+      label: '出勤規定', icon: '🕐', bg: '#FFF8F0',
+      items: [
+        '上班時間請於到班 5 分鐘前完成打卡',
+        '請假需提前 3 天申請，緊急狀況需電話通知',
+        '教學日不得遲到，如遇特殊狀況請立即通報組長',
+        '每週例行會議請準時出席，不得無故缺席'
+      ]
+    },
+    {
+      label: '服裝儀容', icon: '👗', bg: '#F0F8FF',
+      items: [
+        '服裝以整潔、方便活動為主',
+        '頭髮需整理整潔，長髮建議束起',
+        '禁止穿著夾腳拖、高跟鞋等不適合陪伴幼兒的鞋款',
+        '配件避免鋒利或易脫落的飾品'
+      ]
+    },
+    {
+      label: '與幼兒互動', icon: '🧒', bg: '#F5FFF5',
+      items: [
+        '任何時候不得對幼兒使用體罰或言語傷害',
+        '幼兒如廁時需全程陪同，不得離開視線',
+        '發現幼兒有異常行為或健康狀況，立即通報',
+        '與幼兒互動時保持溫柔堅定，給予正向引導'
+      ]
+    },
+    {
+      label: '與家長溝通', icon: '💬', bg: '#FFF5FF',
+      items: [
+        '對家長詢問不確定時，請說「我幫您確認」後回報組長',
+        '不得私下給予家長任何承諾或保證',
+        '幼兒在園狀況統一透過必亨 App 聯絡簿回報',
+        '遇到家長投訴或糾紛，請立即通報組長處理'
+      ]
+    }
+  ],
+
+  /* ── 蒙特梭利教學區 ── */
+  montessori: [
+    { icon: '🏡', name: '日常區', desc: '培養生活自理與秩序感' },
+    { icon: '👀', name: '感官區', desc: '透過感官探索認識世界' },
+    { icon: '🔢', name: '數學區', desc: '從具體到抽象的數概念' },
+    { icon: '📚', name: '語文區', desc: '語言表達與閱讀準備' },
+    { icon: '🧩', name: '福祿貝爾恩物區', desc: '創造力與空間概念' }
+  ],
+
+  /* ── 搶答題目（共 8 關，每關 2 題）── */
+  quizzes: [
+    /* 第1關：環境篇 */
+    {
+      name: '環境篇',
+      questions: [
+        {
+          q: '幼兒園的戶外活動區在哪一層樓？',
+          opts: ['一樓', '二樓', '三樓', '頂樓'],
+          ans: 3,
+          exp: '頂樓設有戶外活動區，提供充足的活動空間給幼兒。'
+        },
+        {
+          q: '托嬰中心和幼兒園是在同一棟建築裡嗎？',
+          opts: ['是的，同一棟', '不是，分開兩棟', '只有部分樓層相連', '我不確定'],
+          ans: 1,
+          exp: '托嬰中心與幼兒園分屬不同棟建築，但同屬劍聲教育機構管理。'
+        }
+      ]
+    },
+    /* 第2關：組織架構篇 */
+    {
+      name: '組織架構篇',
+      questions: [
+        {
+          q: '如果你有教學上的問題，第一個應該找誰？',
+          opts: ['直接找執行長', '找你的直屬組長', '找副園長', '自己解決就好'],
+          ans: 1,
+          exp: '教學問題請先找直屬組長（楊繡惠主任或徐小竹副園長），組長無法解決再逐級上報。'
+        },
+        {
+          q: '楊繡惠老師的職稱是？',
+          opts: ['執行長', '副園長', '教學主任', '幼幼班組長'],
+          ans: 2,
+          exp: '楊繡惠老師擔任教學主任，負責統籌幼兒園的教學事務。'
+        }
+      ]
+    },
+    /* 第3關：認識同事篇 */
+    {
+      name: '認識同事篇',
+      questions: [
+        {
+          q: '陳志偉老師服務於哪個單位？',
+          opts: ['幼兒園大班', '托嬰中心', '行政部門', '幼兒園小班'],
+          ans: 1,
+          exp: '陳志偉老師是托嬰保育員，服務於托嬰中心，已有 3 年年資。'
+        },
+        {
+          q: '林怡君老師的年資是幾年？',
+          opts: ['3 年', '5 年', '8 年', '10 年'],
+          ans: 2,
+          exp: '林怡君老師擁有 8 年教學年資，是班上的資深教師。'
+        }
+      ]
+    },
+    /* 第4關：一日流程篇 */
+    {
+      name: '一日流程篇',
+      questions: [
+        {
+          q: '幼兒的工作時間（蒙特梭利教具操作）是幾點開始？',
+          opts: ['08:00', '09:00', '09:30', '10:00'],
+          ans: 2,
+          exp: '09:30 開始工作時間，讓幼兒自主選擇並操作蒙特梭利教具。'
+        },
+        {
+          q: '午休前，幼兒需要做什麼？',
+          opts: ['直接躺下睡覺', '刷牙、鋪床、安靜入睡', '看故事書', '自由玩耍'],
+          ans: 1,
+          exp: '午休前需刷牙、鋪床，培養幼兒的生活自理能力與良好作息習慣。'
+        }
+      ]
+    },
+    /* 第5關：園所規章篇 */
+    {
+      name: '園所規章篇',
+      questions: [
+        {
+          q: '幼兒如廁時，老師應該怎麼做？',
+          opts: ['讓幼兒自己去，培養獨立', '全程陪同，不得離開視線', '請其他老師代為照看', '視情況而定'],
+          ans: 1,
+          exp: '幼兒如廁時需全程陪同，這是基本安全守則，確保幼兒安全。'
+        },
+        {
+          q: '家長詢問你不確定的問題時，正確的回應是？',
+          opts: ['根據自己的判斷直接回答', '說「我不知道」並轉身離開', '說「我幫您確認」後回報組長', '請家長直接問園長'],
+          ans: 2,
+          exp: '遇到不確定的問題，專業的回應是說「我幫您確認」，再向組長求證後回覆家長。'
+        }
+      ]
+    },
+    /* 第6關：園所歷史篇 */
+    {
+      name: '園所歷史篇',
+      questions: [
+        {
+          q: '劍聲教育機構最初創立的核心理念是什麼？',
+          opts: ['讓孩子快樂玩耍', '以愛為本，培育完整的人', '提升學業成績', '服務雙薪家庭'],
+          ans: 1,
+          exp: '劍聲的核心理念是「以愛為本，培育完整的人」，這是所有教育工作的根基。'
+        },
+        {
+          q: '劍聲目前服務的校區數量是幾個？',
+          opts: ['3 個', '6 個', '10 個', '18 個'],
+          ans: 0,
+          exp: '劍聲目前在台北地區設有 3 個校區，持續為更多家庭提供優質幼兒教育。'
+        }
+      ]
+    },
+    /* 第7關：教學體系篇 */
+    {
+      name: '教學體系篇',
+      questions: [
+        {
+          q: '感官區的主要目的是什麼？',
+          opts: ['練習寫字和閱讀', '透過感官探索認識世界', '學習數字與計算', '培養生活自理能力'],
+          ans: 1,
+          exp: '感官區透過各種教具刺激視覺、觸覺、聽覺等感官，幫助幼兒認識世界的各種特質。'
+        },
+        {
+          q: '幼兒在蒙特梭利教室裡操作教具，老師的角色主要是？',
+          opts: ['在旁邊指導每一個步驟', '觀察並在適當時機引導', '讓幼兒完全自由，不介入', '統一示範後全班一起操作'],
+          ans: 1,
+          exp: '蒙特梭利教師是「有準備的引導者」，以觀察為主，在適當時機提供最小限度的介入。'
+        }
+      ]
+    },
+    /* 第8關：必亨App篇 */
+    {
+      name: '必亨 App 篇',
+      questions: [
+        {
+          q: '每天的幼兒狀況紀錄，應該透過必亨的哪個功能回報給家長？',
+          opts: ['公告欄', '聯絡簿', '學習紀錄', '直接打電話'],
+          ans: 1,
+          exp: '聯絡簿是每日記錄幼兒狀況的功能，家長可即時在 App 查看，是主要溝通橋樑。'
+        },
+        {
+          q: '上傳幼兒活動照片給家長，應該使用哪個功能？',
+          opts: ['聯絡簿', '公告欄', '學習紀錄', '傳 LINE 給家長'],
+          ans: 2,
+          exp: '學習紀錄功能專門用於上傳幼兒活動照片，讓家長看見孩子在園的精彩時刻。'
+        }
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const S = {
+  screen:        0,
+  name:          '',
+  unit:          '',
+  joinDate:      '',
+  score:         0,
+  qStation:      0,   // 0–7 which quiz set
+  qIdx:          0,   // 0 or 1, which question
+  qAnswered:     null,// null or selected option index
+  staffWatched:  new Set(),
+  videoTimerID:  null,
+  videoElapsed:  0,
+  videoUnlocked: false,
+  monteShown:    false
+};
+
+/* ============================================================
+   MASCOT SVG BUILDERS
+   ============================================================ */
+function binbinSVG(w=100, h=120) {
+  return `<svg viewBox="0 0 100 120" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue bunny ears -->
+  <ellipse cx="33" cy="22" rx="10" ry="23" fill="#4DC4D5" transform="rotate(-12 33 22)"/>
+  <ellipse cx="33" cy="22" rx="5.5" ry="17" fill="#B8EEF4" transform="rotate(-12 33 22)"/>
+  <ellipse cx="67" cy="22" rx="10" ry="23" fill="#4DC4D5" transform="rotate(12 67 22)"/>
+  <ellipse cx="67" cy="22" rx="5.5" ry="17" fill="#B8EEF4" transform="rotate(12 67 22)"/>
+  <!-- Head -->
+  <circle cx="50" cy="56" r="30" fill="#FFD4A8"/>
+  <!-- Eyes -->
+  <circle cx="39" cy="51" r="5" fill="#2A2A2A"/>
+  <circle cx="61" cy="51" r="5" fill="#2A2A2A"/>
+  <circle cx="41" cy="49" r="2" fill="#fff"/>
+  <circle cx="63" cy="49" r="2" fill="#fff"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="60" rx="4" ry="3" fill="#FF8FAB"/>
+  <!-- Whiskers -->
+  <line x1="29" y1="59" x2="44" y2="61" stroke="#2A2A2A" stroke-width=".8" opacity=".3"/>
+  <line x1="29" y1="63" x2="44" y2="63" stroke="#2A2A2A" stroke-width=".8" opacity=".3"/>
+  <line x1="56" y1="61" x2="71" y2="59" stroke="#2A2A2A" stroke-width=".8" opacity=".3"/>
+  <line x1="56" y1="63" x2="71" y2="63" stroke="#2A2A2A" stroke-width=".8" opacity=".3"/>
+  <!-- Smile -->
+  <path d="M44 65 Q50 71 56 65" stroke="#2A2A2A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- Body red traditional -->
+  <rect x="22" y="82" width="56" height="36" rx="14" fill="#E85544"/>
+  <path d="M38 82 L50 93 L62 82" fill="#C73D2E"/>
+  <circle cx="50" cy="104" r="3.5" fill="#C73D2E"/>
+</svg>`;
+}
+
+function yueyueSVG(w=100, h=120) {
+  return `<svg viewBox="0 0 100 120" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pink bunny ears -->
+  <ellipse cx="33" cy="22" rx="10" ry="23" fill="#FF8FAB" transform="rotate(-12 33 22)"/>
+  <ellipse cx="33" cy="22" rx="5.5" ry="17" fill="#FFD4E5" transform="rotate(-12 33 22)"/>
+  <ellipse cx="67" cy="22" rx="10" ry="23" fill="#FF8FAB" transform="rotate(12 67 22)"/>
+  <ellipse cx="67" cy="22" rx="5.5" ry="17" fill="#FFD4E5" transform="rotate(12 67 22)"/>
+  <!-- Hair bun -->
+  <circle cx="50" cy="24" r="10" fill="#2A2A2A"/>
+  <circle cx="50" cy="24" r="7"  fill="#383838"/>
+  <!-- Head -->
+  <circle cx="50" cy="56" r="30" fill="#FFD4A8"/>
+  <!-- Hair fringe -->
+  <path d="M21 48 Q36 34 50 37 Q64 34 79 48" fill="#2A2A2A"/>
+  <!-- Eyes with lashes -->
+  <circle cx="39" cy="52" r="5" fill="#2A2A2A"/>
+  <circle cx="61" cy="52" r="5" fill="#2A2A2A"/>
+  <circle cx="41" cy="50" r="2" fill="#fff"/>
+  <circle cx="63" cy="50" r="2" fill="#fff"/>
+  <path d="M34 48 L33 44" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M37 46 L37 42" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M41 45 L42 41" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M59 45 L58 41" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M63 46 L64 42" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M66 48 L67 44" stroke="#2A2A2A" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- Blush -->
+  <circle cx="30" cy="58" r="7" fill="#FFB3C6" opacity=".45"/>
+  <circle cx="70" cy="58" r="7" fill="#FFB3C6" opacity=".45"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="61" rx="4" ry="3" fill="#FF8FAB"/>
+  <!-- Smile -->
+  <path d="M44 66 Q50 72 56 66" stroke="#2A2A2A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- Body red traditional -->
+  <rect x="22" y="82" width="56" height="36" rx="14" fill="#E85544"/>
+  <path d="M38 82 L50 93 L62 82" fill="#C73D2E"/>
+  <!-- Flower -->
+  <circle cx="63" cy="97" r="5" fill="#FFD4E5"/>
+  <circle cx="63" cy="97" r="3" fill="#FF8FAB"/>
+</svg>`;
+}
+
+/* ============================================================
+   HEADER & PROGRESS
+   ============================================================ */
+const STATION_LABELS = ['環境','組織','同事','流程','規章','歷史','教學','必亨'];
+
+function updateHeader(screenNum) {
+  const hdr = document.getElementById('main-header');
+  if (screenNum === 0) { hdr.classList.add('hidden'); return; }
+  hdr.classList.remove('hidden');
+
+  // Progress dots
+  const container = document.getElementById('progress-dots');
+  container.innerHTML = '';
+  const currentStation = screenNum >= 18 ? 9 : Math.ceil((screenNum - 1) / 2);
+
+  for (let i = 1; i <= 8; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'pdot-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'pdot';
+    if (i < currentStation) dot.classList.add('done');
+    else if (i === currentStation) dot.classList.add('current');
+    const lbl = document.createElement('div');
+    lbl.className = 'pdot-label';
+    lbl.textContent = STATION_LABELS[i-1];
+    wrap.appendChild(dot);
+    wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  }
+
+  document.getElementById('score-val').textContent = S.score;
+}
+
+function addScore(pts) {
+  S.score += pts;
+  const el = document.getElementById('score-val');
+  el.textContent = S.score;
+  const disp = document.getElementById('score-display');
+  disp.classList.remove('score-bump');
+  void disp.offsetWidth;
+  disp.classList.add('score-bump');
+}
+
+/* ============================================================
+   MASCOT POPUP
+   ============================================================ */
+let popupTimer = null;
+function showPopup(who, msg) {
+  clearTimeout(popupTimer);
+  const pop = document.getElementById('mascot-popup');
+  document.getElementById('popup-text').textContent = msg;
+  const svg = document.getElementById('popup-mascot-svg');
+  svg.innerHTML = (who === 'binbin' ? binbinSVG(72, 86) : yueyueSVG(72, 86));
+  svg.setAttribute('viewBox', '0 0 100 120');
+  pop.classList.remove('show');
+  void pop.offsetWidth;
+  pop.classList.add('show');
+  popupTimer = setTimeout(() => pop.classList.remove('show'), 3000);
+}
+
+/* ============================================================
+   TYPEWRITER
+   ============================================================ */
+function typewrite(elementId, text, onDone, speed = 38) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.innerHTML = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.id = 'tw-cursor';
+  el.appendChild(cursor);
+  const iv = setInterval(() => {
+    if (i >= text.length) {
+      clearInterval(iv);
+      cursor.remove();
+      if (onDone) onDone();
+      return;
+    }
+    el.insertBefore(document.createTextNode(text[i]), cursor);
+    i++;
+  }, speed);
+}
+
+/* ============================================================
+   VIDEO TIMER
+   ============================================================ */
+function startVideoTimer(nextScreen, timerBarId, lockAreaId, btnWrapperId) {
+  clearInterval(S.videoTimerID);
+  S.videoElapsed  = 0;
+  S.videoUnlocked = false;
+
+  const bar   = document.getElementById(timerBarId);
+  const lock  = document.getElementById(lockAreaId);
+  const btnW  = document.getElementById(btnWrapperId);
+  if (btnW) btnW.style.display = 'none';
+
+  S.videoTimerID = setInterval(() => {
+    S.videoElapsed++;
+    const pct = Math.min(100, (S.videoElapsed / 30) * 100);
+    if (bar) bar.style.width = pct + '%';
+    if (S.videoElapsed >= 30 && !S.videoUnlocked) {
+      S.videoUnlocked = true;
+      clearInterval(S.videoTimerID);
+      if (lock)  lock.style.display = 'none';
+      if (btnW) {
+        btnW.style.display = 'flex';
+        btnW.style.animation = 'fadeUp .45s ease';
+      }
+    }
+  }, 1000);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function go(n) {
+  clearInterval(S.videoTimerID);
+  S.screen = n;
+  const main = document.getElementById('app-main');
+  main.className = n === 0 ? '' : 'with-header';
+  main.innerHTML = renderScreen(n);
+  updateHeader(n);
+  window.scrollTo(0, 0);
+  initScreen(n);
+}
+
+/* ============================================================
+   ORG CHART RENDERER
+   ============================================================ */
+function renderOrgNode(node, depth=0) {
+  const initial = node.name.charAt(0);
+  // 有 photo 屬性時顯示圖片，圖片載入失敗時自動 fallback 到文字頭像
+  const avatarHtml = node.photo ? `
+    <div class="org-photo-wrap">
+      <img src="${node.photo}" class="org-photo" alt="${node.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="org-avatar" style="background:${node.avatarBg};display:none">${initial}</div>
+    </div>` :
+    `<div class="org-avatar" style="background:${node.avatarBg}">${initial}</div>`;
+
+  return `
+    <div class="org-branch">
+      <div class="org-card ${node.colorClass||''}">
+        ${avatarHtml}
+        <div class="org-role">${node.title}</div>
+        <div class="org-name">${node.name}</div>
+      </div>
+      ${node.children && node.children.length ? `
+        <div class="org-branch-vline"></div>
+        <div class="org-level" style="gap:${depth>0?'14px':'20px'}">
+          ${node.children.map(c => renderOrgNode(c, depth+1)).join('')}
+        </div>
+      ` : ''}
+    </div>`;
+}
+
+/* ============================================================
+   SCREEN RENDERERS
+   ============================================================ */
+function renderScreen(n) {
+  switch(n) {
+    case 0:  return renderS0();
+    case 1:  return renderS1();
+    case 2:  return renderVideoStation(0, 'environment',
+               '第一站：認識環境', '彬彬', '每一個空間都藏著我們對孩子的心意，跟著園長一起走走看看吧！', 3);
+    case 3:  return renderQuiz(0);
+    case 4:  return renderS4();
+    case 5:  return renderQuiz(1);
+    case 6:  return renderS6();
+    case 7:  return renderQuiz(2);
+    case 8:  return renderS8();
+    case 9:  return renderQuiz(3);
+    case 10: return renderS10();
+    case 11: return renderQuiz(4);
+    case 12: return renderVideoStation(5, 'history',
+               '第六站：園所歷史', '彬彬', '了解劍聲的故事，你會更明白我們為什麼這樣做教育。', 13);
+    case 13: return renderQuiz(5);
+    case 14: return renderS14();
+    case 15: return renderQuiz(6);
+    case 16: return renderVideoStation(7, 'biheng',
+               '第八站：必亨 App', '彬彬', '必亨智慧學校 App 是我們跟家長溝通最重要的橋樑，來學怎麼用吧！', 17, true);
+    case 17: return renderQuiz(7);
+    case 18: return renderS18();
+    default: return '<div class="screen-inner"><p>畫面不存在</p></div>';
+  }
+}
+
+/* ── Screen 0: 資料輸入 ── */
+function renderS0() {
+  const today = new Date().toISOString().split('T')[0];
+  return `
+  <div class="s0-wrap">
+    <div class="s0-inner">
+      <div class="s0-mascots">
+        <div class="float-anim">${binbinSVG(76,92)}</div>
+        <div class="float-anim2">${yueyueSVG(76,92)}</div>
+      </div>
+      <div class="s0-logo">劍聲幼教</div>
+      <div class="s0-sub">新人入職引導系統</div>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">新老師姓名 *</label>
+          <input class="form-input" id="inp-name" type="text" placeholder="請輸入姓名" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">服務單位</label>
+          <select class="form-select" id="inp-unit">
+            <option value="台北劍聲幼兒園">台北劍聲幼兒園</option>
+            <option value="台北劍聲托嬰中心">台北劍聲托嬰中心</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">入職日期</label>
+          <input class="form-input" id="inp-date" type="date" value="${today}">
+        </div>
+        <div class="mt24 flex-end">
+          <button class="btn btn-primary" onclick="submitForm()">開始引導 →</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function submitForm() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) {
+    document.getElementById('inp-name').style.borderColor = 'var(--coral)';
+    document.getElementById('inp-name').focus();
+    return;
+  }
+  S.name     = name;
+  S.unit     = document.getElementById('inp-unit').value;
+  S.joinDate = document.getElementById('inp-date').value;
+  go(1);
+}
+
+/* ── Screen 1: 歡迎動畫 ── */
+function renderS1() {
+  return `
+  <div class="with-header" style="width:100%">
+  <div class="welcome-center" style="animation:fadeUp .45s ease">
+    <div class="welcome-mascots-row">
+      <div class="welcome-mascot-col slide-left">
+        <div class="float-anim">${binbinSVG(116,140)}</div>
+        <div class="welcome-mascot-label">彬彬</div>
+      </div>
+      <div class="welcome-mascot-col slide-right">
+        <div class="float-anim2">${yueyueSVG(116,140)}</div>
+        <div class="welcome-mascot-label">月月</div>
+      </div>
+    </div>
+    <div class="welcome-bubble" id="tw-area">
+      <span id="tw-cursor"></span>
+    </div>
+    <div class="mt24" id="welcome-btn-area" style="display:none">
+      <button class="btn btn-primary" onclick="go(2)">我準備好了 →</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function initS1() {
+  const msg = `親愛的${S.name}老師，歡迎來到劍聲教育機構！我是彬彬，她是月月。從今天起，我們會陪著你認識這個充滿愛的地方。準備好了嗎？我們出發吧！`;
+  typewrite('tw-area', msg, () => {
+    const btn = document.getElementById('welcome-btn-area');
+    if (btn) { btn.style.display = 'block'; btn.style.animation = 'fadeUp .4s ease'; }
+  });
+}
+
+/* ── Video Station Generic (screens 2, 12, 16) ── */
+function renderVideoStation(stationNum, videoKey, title, mascotWho, speech, nextScreen, extraCards=false) {
+  const isLeft = mascotWho === '彬彬';
+  const mascotEl = isLeft ? binbinSVG(80,96) : yueyueSVG(80,96);
+  const mascotClass = isLeft ? 'slide-left' : 'slide-right';
+
+  let extra = '';
+  if (videoKey === 'history') {
+    extra = `
+      <div class="card mt16" style="background:var(--sky-lt);border:1.5px solid var(--sky)">
+        <p style="font-size:.96rem;line-height:1.8">
+          📖 劍聲教育機構成立於 <strong>${CONFIG.institution.founded}</strong>，
+          至今已服務超過 <strong>${CONFIG.institution.familiesServed}</strong> 個家庭。
+        </p>
+      </div>`;
+  }
+  if (videoKey === 'biheng') {
+    extra = `
+      <div class="biheng-cards mt16">
+        <div class="biheng-card">
+          <div class="biheng-icon">📱</div>
+          <h4>聯絡簿</h4>
+          <p>每日記錄幼兒狀況，家長可即時查看</p>
+        </div>
+        <div class="biheng-card">
+          <div class="biheng-icon">📢</div>
+          <h4>公告欄</h4>
+          <p>重要通知統一在這裡發布</p>
+        </div>
+        <div class="biheng-card">
+          <div class="biheng-icon">📷</div>
+          <h4>學習紀錄</h4>
+          <p>上傳幼兒活動照片，分享給家長</p>
+        </div>
+      </div>`;
+  }
+
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 ${stationNum+1} 站</div>
+    <h2 class="station-title">${title}</h2>
+    <div class="mascot-row ${isLeft?'':'reverse'}">
+      <div class="mascot-col ${mascotClass}">
+        ${mascotEl}
+        <div class="mascot-name-tag">${mascotWho}</div>
+      </div>
+      <div class="speech-bubble">${speech}</div>
+    </div>
+
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/${CONFIG.videos[videoKey]}?rel=0&modestbranding=1"
+        allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+
+    <div id="lock-area">
+      <div class="video-lock-bar">
+        <span class="lock-icon">🔒</span>
+        <div class="lock-text">觀看 <strong><span id="sec-left">30</span> 秒</strong>後繼續</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="vid-prog"></div>
+        </div>
+      </div>
+    </div>
+    ${extra}
+    <div id="vid-btn-area" style="display:none" class="mt24 flex-end">
+      <button class="btn btn-primary" onclick="go(${nextScreen})">看完了，來答題！🎮</button>
+    </div>
+  </div>`;
+}
+
+function initVideoTimer(nextScreen) {
+  let elapsed = 0;
+  clearInterval(S.videoTimerID);
+  const bar     = document.getElementById('vid-prog');
+  const secSpan = document.getElementById('sec-left');
+  S.videoTimerID = setInterval(() => {
+    elapsed++;
+    const pct = Math.min(100, (elapsed/30)*100);
+    if (bar)     bar.style.width = pct + '%';
+    if (secSpan) secSpan.textContent = Math.max(0, 30 - elapsed);
+    if (elapsed >= 30) {
+      clearInterval(S.videoTimerID);
+      const lockArea = document.getElementById('lock-area');
+      const btnArea  = document.getElementById('vid-btn-area');
+      if (lockArea) lockArea.style.display = 'none';
+      if (btnArea)  { btnArea.style.display = 'flex'; btnArea.style.animation = 'fadeUp .4s ease'; }
+    }
+  }, 1000);
+}
+
+/* ── Screen 4: 組織架構 ── */
+function renderS4() {
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 2 站</div>
+    <h2 class="station-title">第二站：組織架構</h2>
+    <div class="mascot-row reverse">
+      <div class="mascot-col slide-right">${yueyueSVG(80,96)}<div class="mascot-name-tag">月月</div></div>
+      <div class="speech-bubble">知道誰在哪個位置，你就不會迷路了！認識了大家，遇到問題就知道要找誰了。</div>
+    </div>
+    <div class="card">
+      <div class="org-wrap">
+        <div class="org-tree">${renderOrgNode(CONFIG.org)}</div>
+      </div>
+    </div>
+    <div class="mt24 flex-end">
+      <button class="btn btn-primary" onclick="go(5)">了解了，來答題！🎮</button>
+    </div>
+  </div>`;
+}
+
+/* ── Screen 6: 認識同事 ── */
+function renderS6() {
+  const cards = CONFIG.staff.map((s, i) => {
+    const watched = S.staffWatched.has(i);
+    return `
+    <div class="staff-card" id="staff-card-${i}">
+      <div class="staff-head" onclick="toggleStaff(${i})">
+        <div class="staff-av" style="background:${s.avatarBg}">${s.name.charAt(0)}</div>
+        <div class="staff-info">
+          <h4>${s.name} ${watched ? '<span class="staff-watched-badge">✓ 已觀看</span>' : ''}</h4>
+          <p>${s.role}<span class="staff-badge">年資 ${s.years} 年</span></p>
+        </div>
+        <span class="staff-chevron">▼</span>
+      </div>
+      <div class="staff-video-panel">
+        <div class="video-wrap" style="margin-top:0">
+          <iframe src="https://www.youtube.com/embed/${s.videoId}?rel=0&modestbranding=1"
+            allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 3 站</div>
+    <h2 class="station-title">第三站：認識同事</h2>
+    <div class="mascot-row">
+      <div class="mascot-col slide-left">${binbinSVG(80,96)}<div class="mascot-name-tag">彬彬</div></div>
+      <div class="speech-bubble">每一位老師都有自己的故事，來聽聽他們說吧！點開每張卡片觀看自我介紹影片。</div>
+    </div>
+    <div class="staff-list">${cards}</div>
+    <div id="staff-continue" style="display:${S.staffWatched.size>=CONFIG.staff.length?'flex':'none'}"
+         class="mt24 flex-end">
+      <button class="btn btn-primary" onclick="go(7)">認識大家了，來答題！🎮</button>
+    </div>
+  </div>`;
+}
+
+function toggleStaff(idx) {
+  const card = document.getElementById(`staff-card-${idx}`);
+  const wasOpen = card.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.staff-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) {
+    card.classList.add('open');
+    S.staffWatched.add(idx);
+    // Update watched badge
+    const h4 = card.querySelector('h4');
+    const s = CONFIG.staff[idx];
+    if (!h4.querySelector('.staff-watched-badge')) {
+      h4.innerHTML = s.name + ' <span class="staff-watched-badge">✓ 已觀看</span>';
+    }
+    // Check if all watched
+    if (S.staffWatched.size >= CONFIG.staff.length) {
+      const cont = document.getElementById('staff-continue');
+      if (cont && cont.style.display === 'none') {
+        cont.style.display = 'flex';
+        cont.style.animation = 'fadeUp .4s ease';
+      }
+    }
+  }
+}
+
+/* ── Screen 8: 一日流程 ── */
+function renderS8() {
+  const items = CONFIG.schedule.map(item => `
+    <div class="tl-item">
+      <div class="tl-time">${item.time}</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>${item.title}</h4>
+        <p>${item.desc}</p>
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 4 站</div>
+    <h2 class="station-title">第四站：一日流程</h2>
+    <div class="mascot-row reverse">
+      <div class="mascot-col slide-right">${yueyueSVG(80,96)}<div class="mascot-name-tag">月月</div></div>
+      <div class="speech-bubble">每一天都有它的節奏，先看影片了解整體感覺，再對照時間軸細細認識！</div>
+    </div>
+
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/${CONFIG.videos.schedule}?rel=0&modestbranding=1"
+        allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+    <div id="lock-area">
+      <div class="video-lock-bar">
+        <span class="lock-icon">🔒</span>
+        <div class="lock-text">觀看 <strong><span id="sec-left">30</span> 秒</strong>後繼續</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="vid-prog"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="vid-btn-area" style="display:none">
+      <div class="card mt16">
+        <div class="timeline">${items}</div>
+      </div>
+      <div class="mt24 flex-end">
+        <button class="btn btn-primary" onclick="go(9)">清楚了，來答題！🎮</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── Screen 10: 園所規章 ── */
+function renderS10() {
+  const cards = CONFIG.rules.map(r => `
+    <div class="rules-card" style="background:${r.bg}">
+      <div class="rules-header">
+        <div class="rules-icon-wrap" style="background:rgba(255,255,255,.7)">${r.icon}</div>
+        <div class="rules-card-title">${r.label}</div>
+      </div>
+      <ul class="rules-list">
+        ${r.items.map(i => `<li>${i}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 5 站</div>
+    <h2 class="station-title">第五站：園所規章</h2>
+    <div class="mascot-row reverse">
+      <div class="mascot-col slide-right">${yueyueSVG(80,96)}<div class="mascot-name-tag">月月</div></div>
+      <div class="speech-bubble">這些規定是為了讓大家都能在一個安心的環境工作！</div>
+    </div>
+    <div class="rules-grid">${cards}</div>
+    <div class="mt24 flex-end">
+      <button class="btn btn-primary" onclick="go(11)">明白了，來答題！🎮</button>
+    </div>
+  </div>`;
+}
+
+/* ── Screen 14: 教學體系 ── */
+function renderS14() {
+  const monteCards = CONFIG.montessori.map((m, i) => `
+    <div class="monte-card" style="animation-delay:${i*0.08}s">
+      <div class="monte-icon">${m.icon}</div>
+      <div class="monte-name">${m.name}</div>
+      <div class="monte-desc">${m.desc}</div>
+    </div>`).join('');
+
+  return `
+  <div class="screen-inner">
+    <div class="station-tag">第 7 站</div>
+    <h2 class="station-title">第七站：教學體系</h2>
+    <div class="mascot-row reverse">
+      <div class="mascot-col slide-right">${yueyueSVG(80,96)}<div class="mascot-name-tag">月月</div></div>
+      <div class="speech-bubble">蒙特梭利不只是教法，是一種看見孩子的方式。先看影片，再認識五大教學區！</div>
+    </div>
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/${CONFIG.videos.montessori}?rel=0&modestbranding=1"
+        allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+    <div id="lock-area">
+      <div class="video-lock-bar">
+        <span class="lock-icon">🔒</span>
+        <div class="lock-text">觀看 <strong><span id="sec-left">30</span> 秒</strong>後繼續</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="vid-prog"></div>
+        </div>
+      </div>
+    </div>
+    <div id="vid-btn-area" style="display:none">
+      <div class="monte-grid">${monteCards}</div>
+      <div class="mt24 flex-end">
+        <button class="btn btn-primary" onclick="go(15)">了解了，來答題！🎮</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── QUIZ ── */
+function renderQuiz(stationIdx) {
+  S.qStation  = stationIdx;
+  S.qIdx      = 0;
+  S.qAnswered = null;
+  return renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const quiz = CONFIG.quizzes[S.qStation];
+  const q    = quiz.questions[S.qIdx];
+  const icons = ['🔴','🔵','🟡','🟢'];
+  const optBtns = q.opts.map((opt, i) => `
+    <button class="qopt c${i}" id="qo${i}" onclick="handleAnswer(${i})"
+            ${S.qAnswered !== null ? 'disabled' : ''}>
+      <span class="opt-icon">${icons[i]}</span>
+      <span>${opt}</span>
+    </button>`).join('');
+
+  const resultHtml = S.qAnswered !== null ? `
+    <div class="quiz-result-box">${q.exp}</div>
+    <div class="quiz-actions">
+      ${S.qIdx < quiz.questions.length - 1
+        ? `<button class="btn btn-primary" onclick="nextQQ()">下一題 →</button>`
+        : `<button class="btn btn-primary" onclick="go(${S.qStation*2+4})">繼續引導 →</button>`}
+    </div>` : '';
+
+  return `
+  <div class="screen-inner">
+    <div class="quiz-zone">
+      <div class="quiz-top">
+        <div class="quiz-badge">🎮 第 ${S.qStation+1} 關搶答・${quiz.name}</div>
+        <div class="quiz-qnum">第 ${S.qIdx+1} 題 / 共 ${quiz.questions.length} 題</div>
+        <div class="quiz-q">${q.q}</div>
+      </div>
+      <div class="quiz-opts">${optBtns}</div>
+      <div id="quiz-feedback">${resultHtml}</div>
+    </div>
+  </div>`;
+}
+
+function handleAnswer(sel) {
+  if (S.qAnswered !== null) return;
+  S.qAnswered = sel;
+  const q = CONFIG.quizzes[S.qStation].questions[S.qIdx];
+  const isCorrect = sel === q.ans;
+
+  if (isCorrect) {
+    addScore(100);
+    showPopup('binbin', '答對了！好厲害！');
+  } else {
+    showPopup('yueyue', '沒關係，記住了就好！');
+  }
+
+  // Update button styles
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById('qo' + i);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) {
+      btn.className = 'qopt state-correct';
+      btn.querySelector('span:last-child').textContent = '✓ ' + q.opts[i];
+    } else if (i === sel && !isCorrect) {
+      btn.className = 'qopt state-wrong-sel';
+      btn.querySelector('span:last-child').textContent = '✗ ' + q.opts[i];
+    } else {
+      btn.className = 'qopt state-dim';
+    }
+  }
+
+  // Show explanation
+  const fb = document.getElementById('quiz-feedback');
+  const quiz = CONFIG.quizzes[S.qStation];
+  fb.innerHTML = `
+    <div class="quiz-result-box">${q.exp}</div>
+    <div class="quiz-actions">
+      ${S.qIdx < quiz.questions.length - 1
+        ? `<button class="btn btn-primary" onclick="nextQQ()">下一題 →</button>`
+        : `<button class="btn btn-primary" onclick="go(${S.qStation*2+4})">繼續引導 →</button>`}
+    </div>`;
+  fb.style.animation = 'fadeUp .35s ease';
+}
+
+function nextQQ() {
+  S.qIdx++;
+  S.qAnswered = null;
+  const main = document.getElementById('app-main');
+  main.innerHTML = renderQuizQuestion();
+}
+
+/* ── Screen 18: 完成 ── */
+function renderS18() {
+  const dateStr = S.joinDate
+    ? new Date(S.joinDate).toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric'})
+    : new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric'});
+
+  return `
+  <div class="with-header" style="width:100%">
+  <div class="completion-center">
+    <div class="completion-mascots">
+      <div class="float-anim">${binbinSVG(100,120)}</div>
+      <div class="float-anim2">${yueyueSVG(100,120)}</div>
+    </div>
+    <div style="font-size:1rem;color:var(--txt-mid);margin-bottom:4px">🎉 恭喜完成所有關卡！</div>
+    <div class="final-score">${S.score} <span style="font-size:1.4rem;color:var(--txt-lt)">分</span></div>
+    <div class="final-score-sub">滿分 1600 分</div>
+    <div class="final-msg" id="final-tw"></div>
+    <div class="final-meta">
+      入職日期：${dateStr}　｜　服務單位：${S.unit}
+    </div>
+    <div class="print-btn-row">
+      <button class="btn btn-primary" onclick="window.print()">🖨️ 列印記錄</button>
+      <button class="btn btn-secondary" onclick="savePDF()">💾 儲存 PDF</button>
+    </div>
+    <div style="margin-top:32px;padding-top:28px;border-top:2px dashed #EAE5DF">
+      <p style="font-size:.95rem;color:var(--txt-mid);margin-bottom:16px">
+        🎓 入職引導完成！接下來進入<strong>劍聲培訓教室</strong>，開始你的專業成長之旅。
+      </p>
+      <button class="btn" style="font-size:1.05rem;padding:15px 36px;background:linear-gradient(135deg,#534AB7,#3C3489);color:#fff;box-shadow:0 4px 20px rgba(83,74,183,.4)"
+        onclick="window.open('../../劍聲培訓教室.html','_blank')">
+        前往劍聲培訓教室 →
+      </button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function initS18() {
+  const msg = `${S.name}老師，你已經完成了劍聲的入職引導！從今天起，你是我們的夥伴了。有任何問題，你的導師和組長隨時都在。加油，我們一起為孩子創造美好的每一天！`;
+  typewrite('final-tw', msg, () => {
+    launchConfetti();
+  });
+}
+
+function savePDF() {
+  window.print();
+}
+
+/* ============================================================
+   INIT SCREEN (event hooks after render)
+   ============================================================ */
+function initScreen(n) {
+  switch(n) {
+    case 1:  initS1(); break;
+    case 2:  initVideoTimer(3);  break;
+    case 8:  initVideoTimer(9);  break;
+    case 12: initVideoTimer(13); break;
+    case 14: initVideoTimer(15); break;
+    case 16: initVideoTimer(17); break;
+    case 18: initS18(); break;
+  }
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#FF6B5B','#4DC4D5','#FFD166','#06D6A0','#FF8FAB','#9B8EC4'];
+  const pieces = Array.from({length: 160}, () => ({
+    x:   Math.random() * canvas.width,
+    y:   Math.random() * canvas.height - canvas.height,
+    r:   Math.random() * 7 + 4,
+    d:   Math.random() * 160 + 80,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: Math.random() * 10 - 5,
+    tiltAngle: 0,
+    tiltSpeed: Math.random() * 0.1 + 0.05,
+    vx: Math.random() * 2 - 1,
+    vy: Math.random() * 2 + 1.5
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+    pieces.forEach(p => {
+      p.tiltAngle += p.tiltSpeed;
+      p.y += p.vy;
+      p.x += p.vx + Math.sin(frame * 0.01 + p.d) * 0.5;
+      p.tilt = Math.sin(p.tiltAngle) * 12;
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = .85;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r * 1.2);
+      ctx.stroke();
+      if (p.y > canvas.height + 20) {
+        p.y = -10; p.x = Math.random() * canvas.width;
+      }
+    });
+    ctx.globalAlpha = 1;
+    if (frame < 360) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  draw();
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+go(0);
+</script>
+</body>
+</html>

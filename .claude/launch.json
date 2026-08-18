@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "onboarding",
+      "runtimeExecutable": "ruby",
+      "runtimeArgs": ["-run", "-e", "httpd", "--", "-p", "8899", "/Users/apple/Desktop/新人入職網頁測試"],
+      "port": 8899
+    },
+    {
+      "name": "training",
+      "runtimeExecutable": "ruby",
+      "runtimeArgs": ["-run", "-e", "httpd", "--", "-p", "8901", "/tmp/train_site"],
+      "port": 8901
+    }
+  ]
+}
